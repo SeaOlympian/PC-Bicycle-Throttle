@@ -5,5 +5,4 @@ Parts List:
   - Arduino compatible board of some kind
   - Hall Effect sensor
 
-  Wiring Diagram:
   ![Teensy 3.2 Wiring Diagram](/Media/wiring_diagram.jpg)
