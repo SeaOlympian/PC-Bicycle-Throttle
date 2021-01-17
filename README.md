@@ -1,2 +1,2 @@
 # PC-Bike-Throttle
-Arduino program to use the rpm of a bike wheel as a throttle input to a pc.
+This is an Arduino project that reads  the RPM of a bicycle wheel and translates it to a throttle input for a PC.
