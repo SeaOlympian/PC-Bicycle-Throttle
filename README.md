@@ -4,3 +4,6 @@ This is an Arduino project that reads the RPM of a bicycle wheel and translates 
 Parts List:
   - Arduino compatible board of some kind
   - Hall Effect sensor
+
+  Wiring Diagram:
+  ![Teensy 3.2 Wiring Diagram](/Media/PC Bike Throttle wiring diagram.jpg)
