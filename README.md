@@ -6,4 +6,4 @@ Parts List:
   - Hall Effect sensor
 
   Wiring Diagram:
-  ![Teensy 3.2 Wiring Diagram](Media/PC Bike Throttle wiring diagram.jpg)
+  ![Teensy 3.2 Wiring Diagram](/Media/wiring_diagram.jpg)
