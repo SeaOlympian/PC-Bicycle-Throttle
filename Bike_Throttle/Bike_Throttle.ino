@@ -1,3 +1,5 @@
+#include <XInput.h>
+
 //These variables can be changed based on user need and preference.
 int Hall_effect_pin = 14;   //Stores the pin number that the hall effect sensor is plugged into.
 float maximumRPM = 90;  //Set to the maximum RPM that you want to pedal at for full throttle.
@@ -23,7 +25,7 @@ void count_function () {
 
 //--------------------
 
-void rpm_calc () {
+int rpm_calc () {
   delay(1000);
    
   //Turns off the interrupt command
@@ -44,6 +46,8 @@ void rpm_calc () {
   }
   
   attachInterrupt(digitalPinToInterrupt(Hall_effect_pin), count_function, RISING);
+
+  return rpm;
 }
 
 //--------------------
@@ -64,9 +68,12 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(Hall_effect_pin, INPUT_PULLUP);
 
-  if ((debug != 0)
+  if (debug != 0)
     //Begin serial console
     Serial.begin(9600);
+
+  XInput.begin();
+  XInput.setTriggerRange(0.5, 0.9);
 
   //Sets up the interupt pin and triggered command
   attachInterrupt(digitalPinToInterrupt(Hall_effect_pin), count_function, RISING);
@@ -81,4 +88,6 @@ void loop() {
   rpm_calc();
 
   throttle_calc();
+
+  XInput.setTrigger(TRIGGER_LEFT, rpm_calc());
 }
