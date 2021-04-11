@@ -1,7 +1,7 @@
 #include <XInput.h>
 
 //These variables can be changed based on user need and preference.
-int Hall_effect_pin = 14;   //Stores the pin number that the hall effect sensor is plugged into.
+int Hall_effect_pin = 18;   //Stores the pin number that the hall effect sensor is plugged into.
 float maximumRPM = 90;  //Set to the maximum RPM that you want to pedal at for full throttle.
 float minimumRPM = 50;  //Set to the RPM that will be the starting point for throttle input (NOTE: this input is the highest RPM that will be equal to ZERO throttle input).
 int debug = 0;  //Outputs debung information to the serial monitor. Set to 0 for no debug options, 1 for hall effect sensor testing, 2 for RPM calculation testing, and 3 for throttle calculation testing.
