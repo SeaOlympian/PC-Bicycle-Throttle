@@ -1,11 +1,16 @@
 #include <XInput.h>
 
-//These variables can be changed based on user need and preference.
-int Hall_effect_pin = 18;   //Stores the pin number that the hall effect sensor is plugged into.
-float maximumRPM = 90;  //Set to the maximum RPM that you want to pedal at for full throttle.
-float minimumRPM = 50;  //Set to the RPM that will be the starting point for throttle input (NOTE: this input is the highest RPM that will be equal to ZERO throttle input).
-int debug = 0;  //Outputs debung information to the serial monitor. Set to 0 for no debug options, 1 for hall effect sensor testing, 2 for RPM calculation testing, and 3 for throttle calculation testing.
+//These values can be changed based on throttle output vs bike input preferences.
+int maximumRPM = 90;  //Set to the maximum RPM that you want to pedal at for full throttle.
+int minimumRPM = 50;  //Set to the RPM that will be the starting point for throttle input (NOTE: this input is the highest RPM that will be equal to ZERO throttle input).
 
+//These variables can be changed based on the Arduino and pins used.
+int Hall_effect_pin = 15;   //Stores the pin number that the hall effect sensor is plugged into.
+int debug = 0;  //Outputs debung information to the serial monitor. Set to 0 for no debug options, 1 for hall effect sensor testing, 2 for RPM calculation testing, and 3 for throttle calculation testing.
+const int Pin_LeftJoyX = A7;
+const int Pin_LeftJoyY = A8;
+
+const int ADC_Max = 1023;
 float RPMRange = maximumRPM - minimumRPM;
 
 //Variable to cout passes of the magnet
@@ -26,7 +31,10 @@ void count_function () {
 //--------------------
 
 int rpm_calc () {
-  delay(1000);
+  unsigned long time_now = 0;
+  while(millis() < time_now + 1000){
+    //Wait and collect data.
+  }
    
   //Turns off the interrupt command
   detachInterrupt(0);
@@ -40,7 +48,7 @@ int rpm_calc () {
   //Reset the count to prevent growing rpm reading
   count = 0;
 
-  if ((debug = 2)){
+  if (debug == 2 || debug == 4){
     Serial.print("RPM = ");
     Serial.println(rpm);
   }
@@ -52,14 +60,31 @@ int rpm_calc () {
 
 //--------------------
 
-void throttle_calc () {
-  //Thanks to Wheatly_Inc, Wolfhaus, and FyronFD
-  throttle = (rpm - minimumRPM)/RPMRange;
+void update_stick() {
+  int leftJoyX = analogRead(Pin_LeftJoyX);
+  int leftJoyY = analogRead(Pin_LeftJoyY);
 
-  if ((debug = 3)){
-    Serial.print("Throttle %: ");
-    Serial.println(throttle);
+  if(debug == 0){
+  XInput.setJoystickX(JOY_LEFT, leftJoyX);
+  XInput.setJoystickY(JOY_LEFT, leftJoyY);
+
+  XInput.send();
   }
+  else{
+    Serial.print("X Axis: ");
+    Serial.println(leftJoyX);
+    Serial.print("Y Axis: ");
+    Serial.println(leftJoyY);
+  }
+}
+
+//--------------------
+
+void update_triggers() {
+  float throttle_input = rpm_calc();
+  
+  if(debug == 0)
+    XInput.setTrigger(TRIGGER_RIGHT, throttle_input);   
 }
 
 //----------MAIN----------
@@ -72,22 +97,23 @@ void setup() {
     //Begin serial console
     Serial.begin(9600);
 
-  XInput.begin();
-  XInput.setTriggerRange(0.5, 0.9);
+  XInput.setJoystickRange(0, ADC_Max);
+  XInput.setTriggerRange(minimumRPM, maximumRPM);
 
   //Sets up the interupt pin and triggered command
   attachInterrupt(digitalPinToInterrupt(Hall_effect_pin), count_function, RISING);
+  
+  XInput.begin();
 }
 
 //--------------------
 
 void loop() {
-  if ((debug = 1))
+  if (debug == 1 || debug == 4){
     Serial.println(digitalRead(Hall_effect_pin));
-    
-  rpm_calc();
+    delay(1000);
+  }
 
-  throttle_calc();
-
-  XInput.setTrigger(TRIGGER_LEFT, rpm_calc());
+  update_stick();
+  update_triggers();
 }
